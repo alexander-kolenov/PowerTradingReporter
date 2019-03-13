@@ -8,55 +8,63 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
+using Utils.Logger;
 
 namespace WindowsService
 {
     public partial class Service : ServiceBase
     {
-        EventLog Log;
+        ServiceLogger _logger;
         TradingReporter TradingReporter;
 
         public Service()
         {
             InitializeComponent();
+            _logger = InitLogger();
 
-//            Log = new EventLog();
-//            Log.Source = ServiceName;
-//            Log.Log = "Application";
-//            Log.BeginInit();
-//            if (!EventLog.SourceExists(Log.Source))
-//            {
-//                EventLog.CreateEventSource(Log.Source, Log.Log);
-//            }
-//            Log.EndInit();
-//            TradingReporterConfiguration config = new TradingReporterConfiguration();
-//            config.UpdateFromAppConfig();
-//
-//            TradingReporter = new TradingReporter(config);
+            TradingReporterConfiguration config = new TradingReporterConfiguration();
+            config.UpdateFromAppConfig();
+
+            TradingReporter = new TradingReporter(config, _logger);
+        }
+
+        private ServiceLogger InitLogger()
+        {
+            var _log = new EventLog();
+            _log.Source = ServiceName;
+            _log.Log = "Application";
+            _log.BeginInit();
+            if (!EventLog.SourceExists(_log.Source))
+            {
+                EventLog.CreateEventSource(_log.Source, _log.Log);
+            }
+            _log.EndInit();
+
+            return new ServiceLogger(_log);
         }
 
         protected override void OnStart(string[] args)
         {
-//            Log.WriteEntry("Started");
-//            TradingReporter.OnStart();
+            _logger.Log(LogLevel.Info,"Started");
+            TradingReporter.OnStart();
         }
 
         protected override void OnStop()
         {
-//            Log.WriteEntry("Stopped");
-//            TradingReporter.OnStop();
+            _logger.Log(LogLevel.Info, "Stopped");
+            TradingReporter.OnStop();
         }
 
         protected override void OnPause()
         {
-//            Log.WriteEntry("Paused");
-//            TradingReporter.OnPause();
+            _logger.Log(LogLevel.Info, "Paused");
+            TradingReporter.OnPause();
         }
 
         protected override void OnContinue()
         {
-//            Log.WriteEntry("Continue");
-//            TradingReporter.OnContinue();
+            _logger.Log(LogLevel.Info, "Continue");
+            TradingReporter.OnContinue();
         }
     }
 }
