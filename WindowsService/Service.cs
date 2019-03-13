@@ -19,43 +19,44 @@ namespace WindowsService
         public Service()
         {
             InitializeComponent();
-            Log = new EventLog();
-            Log.Source = ServiceName;
-            Log.Log = "Application";
-            Log.BeginInit();
-            if (!EventLog.SourceExists(Log.Source))
-            {
-                EventLog.CreateEventSource(Log.Source, Log.Log);
-            }
-            Log.EndInit();
-            TradingReporterConfiguration config = new TradingReporterConfiguration();
-            config.UpdateFromAppConfig();
 
-            TradingReporter = new TradingReporter(config);
+//            Log = new EventLog();
+//            Log.Source = ServiceName;
+//            Log.Log = "Application";
+//            Log.BeginInit();
+//            if (!EventLog.SourceExists(Log.Source))
+//            {
+//                EventLog.CreateEventSource(Log.Source, Log.Log);
+//            }
+//            Log.EndInit();
+//            TradingReporterConfiguration config = new TradingReporterConfiguration();
+//            config.UpdateFromAppConfig();
+//
+//            TradingReporter = new TradingReporter(config);
         }
 
         protected override void OnStart(string[] args)
         {
-            Log.WriteEntry("Started");
-            TradingReporter.OnStart();
+//            Log.WriteEntry("Started");
+//            TradingReporter.OnStart();
         }
 
         protected override void OnStop()
         {
-            Log.WriteEntry("Stopped");
-            TradingReporter.OnStop();
+//            Log.WriteEntry("Stopped");
+//            TradingReporter.OnStop();
         }
 
         protected override void OnPause()
         {
-            Log.WriteEntry("Paused");
-            TradingReporter.OnPause();
+//            Log.WriteEntry("Paused");
+//            TradingReporter.OnPause();
         }
 
         protected override void OnContinue()
         {
-            Log.WriteEntry("Continue");
-            TradingReporter.OnContinue();
+//            Log.WriteEntry("Continue");
+//            TradingReporter.OnContinue();
         }
     }
 }

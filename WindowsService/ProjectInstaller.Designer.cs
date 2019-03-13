@@ -35,11 +35,12 @@
             // 
             this.serviceProcessInstaller.Password = null;
             this.serviceProcessInstaller.Username = null;
-            this.serviceProcessInstaller.AfterInstall += new System.Configuration.Install.InstallEventHandler(this.ServiceProcessInstaller1_AfterInstall);
+            this.serviceProcessInstaller.AfterInstall += new System.Configuration.Install.InstallEventHandler(this.ServiceProcessInstaller_AfterInstall);
             // 
             // serviceInstaller
             // 
             this.serviceInstaller.ServiceName = "Power Trading Reporter";
+            this.serviceInstaller.AfterInstall += new System.Configuration.Install.InstallEventHandler(this.ServiceInstaller_AfterInstall);
             // 
             // ProjectInstaller
             // 
