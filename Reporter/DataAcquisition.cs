@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TradingPlatform;
 
 
@@ -14,9 +11,8 @@ namespace Reporter
         {
             var ts = new TradingService();
 
-            DateTime dt = DateTime.UtcNow;
-            var trades = ts.GetTrades(dt);
-            var ad = AgregateTrades(dt, trades);
+            var trades = ts.GetTrades(date);
+            var ad = AgregateTrades(date, trades);
             return ad;
         }
 
