@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AggregatedData.cs" />
+    <Compile Include="SessionInfo.cs" />
     <Compile Include="TradingReporterConfiguration.cs" />
     <Compile Include="DataAcquisition.cs" />
     <Compile Include="TradingReporter.cs" />

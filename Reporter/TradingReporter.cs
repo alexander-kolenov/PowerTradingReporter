@@ -23,23 +23,25 @@ namespace Reporter
             _timer = new Timer(new TimerCallback(TimerProc));
         }
 
-        public void MakeReportSafe(DateTime utcTime)
+        public void MakeReportSafe()
         {
+            DateTime utcNow = DateTime.UtcNow;
             try
             {
-                MakeReport(utcTime);
-                _logger.Log(LogLevel.Debug, $"Make Report({utcTime})");
+                MakeReport(utcNow);
+                _logger.Log(LogLevel.Debug, $"Make Report({utcNow})");
             }
             catch (Exception ex)
             {
-                _logger.Log(LogLevel.Error, $"Exception: {ex.Message} {ex.StackTrace}");
+                _logger.Log(LogLevel.Error, $"try to Make Report ({utcNow}): Exception: {ex.Message} {ex.StackTrace}");
             }
         }
 
         public void MakeReport(DateTime utcTime)
         {
             DataAcquisition da = new DataAcquisition();
-            AggregatedData ad = da.GetAggregatedTrades(utcTime);
+            DateTime tradingDate = da.GetTradingDay(utcTime, _config.SessionInfo);
+            AggregatedData ad = da.GetAggregatedTrades(tradingDate, _config.SessionInfo);
 
             ReportBuilder rb = new ReportBuilder();
             string reportFileName = Path.Combine(_config.ReportingDirrectory, rb.GetCsvReportFileName(utcTime));
@@ -78,9 +80,9 @@ namespace Reporter
         private void TimerProc(object state)
         {
             if (_executionTask.IsCompleted)
-                _executionTask = Task.Run(() => MakeReportSafe(DateTime.UtcNow));
+                _executionTask = Task.Run(() => MakeReportSafe());
             else
-                _logger.Log(LogLevel.Warning, $"Skip report at {DateTime.UtcNow:u}. Reason: previous report is running");
+                _logger.Log(LogLevel.Warning, $"Skip report at {DateTime.Now:u}. Reason: previous report is running");
         }
 
         #endregion

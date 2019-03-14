@@ -10,9 +10,13 @@ namespace Reporter
         {
             CsvData report = new CsvData(new[] { "Local Time", "Volume" });
 
+            DateTime utcSessionStart = data.TradingDate.AddDays(-1).Add(data.SessionStart);
+
             for (int i = 0; i < data.Volumes.Length; i++)
             {
-                string time = TimeSpan.FromHours(i + 23).ToString(@"hh\:mm");
+                DateTime localTime = utcSessionStart.Add(TimeSpan.FromHours(i)).ToLocalTime();
+
+                string time = localTime.TimeOfDay.ToString(@"hh\:mm");
                 string volume = data.Volumes[i].ToString(CultureInfo.InvariantCulture);
 
                 report.AddRow(new[] { time, volume });
@@ -20,9 +24,9 @@ namespace Reporter
             return report;
         }
 
-        public string GetCsvReportFileName(DateTime extractionTime)
+        public string GetCsvReportFileName(DateTime utcTime)
         {
-            string str = extractionTime.ToString("yyyyMMdd_hhmm");
+            string str = utcTime.ToLocalTime().ToString("yyyyMMdd_hhmm");
             return $"PowerPosition_{str}.csv";
         }
 
