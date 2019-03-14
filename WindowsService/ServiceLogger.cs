@@ -5,11 +5,12 @@ namespace WindowsService
 {
     class ServiceLogger : ILogger
     {
-        private EventLog _logger;
+        private readonly EventLog _logger;
 
-        public ServiceLogger(EventLog logger)
+        public ServiceLogger(Service service)
         {
-            _logger = logger;
+            //use default service logger
+            _logger = service.EventLog;
         }
 
         public void Log(LogLevel level, string message)
