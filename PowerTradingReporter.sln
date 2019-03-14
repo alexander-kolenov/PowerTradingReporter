@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reporter", "Reporter\Report
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugMe", "DebugMe\DebugMe.csproj", "{4F82A30F-F7D7-48EE-B07D-E734DDD74055}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{1AB96176-0C12-41AC-A406-7A904D134A1A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,16 @@ Global
 		{4F82A30F-F7D7-48EE-B07D-E734DDD74055}.Release|x64.Build.0 = Release|Any CPU
 		{4F82A30F-F7D7-48EE-B07D-E734DDD74055}.Release|x86.ActiveCfg = Release|Any CPU
 		{4F82A30F-F7D7-48EE-B07D-E734DDD74055}.Release|x86.Build.0 = Release|Any CPU
+		{1AB96176-0C12-41AC-A406-7A904D134A1A}.Debug|Any CPU.ActiveCfg = Debug
+		{1AB96176-0C12-41AC-A406-7A904D134A1A}.Debug|ARM.ActiveCfg = Debug
+		{1AB96176-0C12-41AC-A406-7A904D134A1A}.Debug|ARM64.ActiveCfg = Debug
+		{1AB96176-0C12-41AC-A406-7A904D134A1A}.Debug|x64.ActiveCfg = Debug
+		{1AB96176-0C12-41AC-A406-7A904D134A1A}.Debug|x86.ActiveCfg = Debug
+		{1AB96176-0C12-41AC-A406-7A904D134A1A}.Release|Any CPU.ActiveCfg = Release
+		{1AB96176-0C12-41AC-A406-7A904D134A1A}.Release|ARM.ActiveCfg = Release
+		{1AB96176-0C12-41AC-A406-7A904D134A1A}.Release|ARM64.ActiveCfg = Release
+		{1AB96176-0C12-41AC-A406-7A904D134A1A}.Release|x64.ActiveCfg = Release
+		{1AB96176-0C12-41AC-A406-7A904D134A1A}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
