@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Csv\CsvData.cs" />
     <Compile Include="Csv\CsvWriter.cs" />
+    <Compile Include="Logger\ConsoleLogger.cs" />
     <Compile Include="Logger\DebugLogger.cs" />
     <Compile Include="Logger\ILogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
