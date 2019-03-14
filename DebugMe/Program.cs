@@ -17,7 +17,7 @@ namespace DebugMe
             TradingReporterConfiguration c = new TradingReporterConfiguration();
             c.UpdateFromAppConfig();
 
-            TradingReporter reporter = new TradingReporter(c, new DebugLogger());
+            TradingReporter reporter = new TradingReporter(c, new ConsoleLogger());
 
             while (true)
             {
