@@ -28,8 +28,8 @@ namespace Reporter
             DateTime utcNow = DateTime.UtcNow;
             try
             {
-                MakeReport(utcNow);
-                _logger.Log(LogLevel.Debug, $"Make Report({utcNow})");
+                string reportName = MakeReport(utcNow);
+                _logger.Log(LogLevel.Debug, $"Report created: {reportName}");
             }
             catch (Exception ex)
             {
@@ -37,7 +37,12 @@ namespace Reporter
             }
         }
 
-        public void MakeReport(DateTime utcTime)
+        /// <summary>
+        /// Creates report and save it to file
+        /// </summary>
+        /// <param name="utcTime"></param>
+        /// <returns>File name of report</returns>
+        public string MakeReport(DateTime utcTime)
         {
             DataAcquisition da = new DataAcquisition();
             DateTime tradingDate = da.GetTradingDay(utcTime, _config.SessionInfo);
@@ -50,6 +55,8 @@ namespace Reporter
 
             CsvWriter w = new CsvWriter();
             w.Write(reportFileName, csvData);
+
+            return reportFileName;
         }
 
 
