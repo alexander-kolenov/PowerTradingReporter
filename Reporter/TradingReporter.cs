@@ -44,6 +44,7 @@ namespace Reporter
             AggregatedData ad = da.GetAggregatedTrades(tradingDate, _config.SessionInfo);
 
             ReportBuilder rb = new ReportBuilder();
+            Directory.CreateDirectory(_config.ReportingDirrectory);
             string reportFileName = Path.Combine(_config.ReportingDirrectory, rb.GetCsvReportFileName(utcTime));
             CsvData csvData = rb.CreateCsvData(ad);
 
