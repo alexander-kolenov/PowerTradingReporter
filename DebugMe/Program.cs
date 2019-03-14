@@ -9,7 +9,32 @@ namespace DebugMe
     {
         static void Main(string[] args)
         {
-            Test2();
+            Test1();
+        }
+
+        private static void Test1()
+        {
+            TradingReporterConfiguration c = new TradingReporterConfiguration();
+            c.UpdateFromAppConfig();
+            ILogger logger = new DebugLogger();
+
+            TradingReporter reporter = new TradingReporter(c, logger);
+
+            DateTime dt = DateTime.UtcNow;
+
+            for (int i = 0; i < 3; i++)
+            {
+                dt = dt.AddHours(1);
+                try
+                {
+                    logger.Log(LogLevel.Debug, $"reporter.MakeReport({dt:u});");
+                    reporter.MakeReport(dt);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"{dt}:  {ex.Message}  -- {ex.StackTrace}");
+                }
+            }
         }
 
         private static void Test2()
@@ -46,27 +71,5 @@ namespace DebugMe
             
         }
 
-        private static void Test1()
-        {
-            TradingReporterConfiguration c = new TradingReporterConfiguration();
-            c.UpdateFromAppConfig();
-
-            TradingReporter reporter = new TradingReporter(c, new DebugLogger());
-
-            DateTime dt = DateTime.Now;
-
-            for (int i = 0; i < 10; i++)
-            {
-                dt = dt.AddHours(1);
-                try
-                {
-                    reporter.MakeReport(dt);
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"{dt}:  {ex.Message}  -- {ex.StackTrace}");
-                }
-            }
-        }
     }
 }
