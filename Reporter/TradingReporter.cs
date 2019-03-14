@@ -82,7 +82,7 @@ namespace Reporter
             if (_executionTask.IsCompleted)
                 _executionTask = Task.Run(() => MakeReportSafe());
             else
-                _logger.Log(LogLevel.Warning, $"Skip report at {DateTime.Now:u}. Reason: previous report is running");
+                _logger.Log(LogLevel.Warning, $"Skip report at {DateTime.Now:G}. Reason: previous report is running");
         }
 
         #endregion

@@ -9,16 +9,16 @@ namespace DebugMe
     {
         static void Main(string[] args)
         {
-            Test1();
+            Test2();
         }
 
         private static void Test1()
         {
-            TradingReporterConfiguration c = new TradingReporterConfiguration();
-            c.UpdateFromAppConfig();
+            TradingReporterConfiguration config = new TradingReporterConfiguration();
+            config.UpdateFromAppConfig();
             ILogger logger = new DebugLogger();
 
-            TradingReporter reporter = new TradingReporter(c, logger);
+            TradingReporter reporter = new TradingReporter(config, logger);
 
             DateTime dt = DateTime.UtcNow;
 
@@ -39,10 +39,11 @@ namespace DebugMe
 
         private static void Test2()
         {
-            TradingReporterConfiguration c = new TradingReporterConfiguration();
-            c.UpdateFromAppConfig();
+            TradingReporterConfiguration config = new TradingReporterConfiguration();
+            config.UpdateFromAppConfig();
 
-            TradingReporter reporter = new TradingReporter(c, new ConsoleLogger());
+            ILogger logger = new ConsoleLogger();
+            TradingReporter reporter = new TradingReporter(config, logger);
 
             while (true)
             {
@@ -50,25 +51,33 @@ namespace DebugMe
                 switch (key)
                 {
                     case 's':
-                        Console.WriteLine("Start");
+                        logger.Log(LogLevel.Debug, "Start");
                         reporter.OnStart();
                         break;
                     case 'x':
-                        Console.WriteLine("Stop");
+                        logger.Log(LogLevel.Debug, "Stop");
                         reporter.OnStop();
                         break;
                     case 'p':
-                        Console.WriteLine("Pause");
+                        logger.Log(LogLevel.Debug, "Pause");
                         reporter.OnPause();
                         break;
                     case 'c':
-                        Console.WriteLine("Continue");
+                        logger.Log(LogLevel.Debug, "Continue");
                         reporter.OnContinue();
                         break;
+                    case 'q':
+                        return;
+                    default:
+                        Console.WriteLine();
+                        continue;
                 }
+                logger.Log(LogLevel.Debug, $"Config.ReportingInterval = {config.ReportingInterval}");
+                logger.Log(LogLevel.Debug, $"Config.SessionInfo.SessionStart = {config.SessionInfo.SessionStart}");
+                logger.Log(LogLevel.Debug, $"Config.ReportingDirrectory = {config.ReportingDirrectory}");
 
             }
-            
+
         }
 
     }
