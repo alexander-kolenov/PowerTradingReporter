@@ -8,9 +8,11 @@ namespace Utils.Csv
 
         public void Write(string path, CsvData data)
         {
+            var directory = Path.GetDirectoryName(path);
+            Directory.CreateDirectory(directory);
+
             using (TextWriter tw = new StreamWriter(path))
             {
-
                 tw.WriteLine(CreateLine(data.Headers));
                 foreach (var x in data.Rows)
                 {

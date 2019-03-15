@@ -7,7 +7,7 @@ namespace Reporter
 {
     public class DataAcquisition
     {
-        internal DateTime GetTradingDay(DateTime utcTime, SessionInfo sessionInfo) // TODO: fix me
+        public DateTime GetTradingDay(DateTime utcTime, SessionInfo sessionInfo) // TODO: fix me
         {
             return (utcTime.TimeOfDay >= sessionInfo.SessionStart)
                 ? utcTime.Date.AddDays(1)
