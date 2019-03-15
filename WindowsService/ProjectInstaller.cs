@@ -28,7 +28,7 @@ namespace WindowsService
                     sc.Start();
                 }
             }
-            catch(Exception ex)
+            catch(Exception)
             {
             }
         }
