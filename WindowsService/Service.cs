@@ -5,6 +5,7 @@ namespace WindowsService
 {
     public partial class Service : ServiceBase
     {
+        TradingReporterConfiguration _config;
         ServiceLogger _logger;
         TradingReporter TradingReporter;
 
@@ -13,14 +14,15 @@ namespace WindowsService
             InitializeComponent();
             _logger = new ServiceLogger(this);
 
-            TradingReporterConfiguration config = new TradingReporterConfiguration();
-            config.UpdateFromAppConfig();
+            _config = new TradingReporterConfiguration();
+            _config.UpdateFromAppConfig();
 
-            TradingReporter = new TradingReporter(config, _logger);
+            TradingReporter = new TradingReporter(_config, _logger);
         }
 
         protected override void OnStart(string[] args)
         {
+            _config.UpdateFromAppConfig();
             TradingReporter.OnStart();
         }
 
@@ -36,6 +38,7 @@ namespace WindowsService
 
         protected override void OnContinue()
         {
+            _config.UpdateFromAppConfig();
             TradingReporter.OnContinue();
         }
     }

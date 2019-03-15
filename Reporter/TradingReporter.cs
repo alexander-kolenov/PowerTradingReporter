@@ -9,15 +9,16 @@ namespace Reporter
 {
     public class TradingReporter
     {
-        private readonly TradingReporterConfiguration _config;
-        private readonly ILogger _logger;
+        public TradingReporterConfiguration Config { get; set; }
+        public ILogger Logger { get; set; }
+
         private readonly Timer _timer;
         private volatile Task _executionTask;
 
         public TradingReporter(TradingReporterConfiguration config, ILogger logger)
         {
-            _config = config;
-            _logger = logger;
+            Config = config;
+            Logger = logger;
             _executionTask = new Task(() => { }); // Set _executionTask != null
             _executionTask.RunSynchronously(); // Make _executionTask.IsCompleted = true
             _timer = new Timer(new TimerCallback(TimerProc));
@@ -44,11 +45,11 @@ namespace Reporter
             try
             {
                 reportName = MakeReport(utcNow);
-                _logger.Log(LogLevel.Debug, $"Report created: {reportName}");
+                Logger.Log(LogLevel.Debug, $"Report created: {reportName}");
             }
             catch (Exception ex)
             {
-                _logger.Log(LogLevel.Error, $"try to Make Report ({utcNow}): Exception: {ex.Message} {ex.StackTrace}");
+                Logger.Log(LogLevel.Error, $"try to Make Report ({utcNow}): Exception: {ex.Message} {ex.StackTrace}");
             }
             return reportName;
         }
@@ -61,12 +62,12 @@ namespace Reporter
         public string MakeReport(DateTime utcTime)
         {
             DataAcquisition da = new DataAcquisition();
-            DateTime tradingDate = da.GetTradingDay(utcTime, _config.SessionInfo);
-            AggregatedData ad = da.GetAggregatedTrades(tradingDate, _config.SessionInfo);
+            DateTime tradingDate = da.GetTradingDay(utcTime, Config.SessionInfo);
+            AggregatedData ad = da.GetAggregatedTrades(tradingDate, Config.SessionInfo);
 
             ReportBuilder rb = new ReportBuilder();
-            Directory.CreateDirectory(_config.ReportingDirrectory);
-            string reportFileName = Path.Combine(_config.ReportingDirrectory, rb.GetCsvReportFileName(utcTime));
+            Directory.CreateDirectory(Config.ReportingDirrectory);
+            string reportFileName = Path.Combine(Config.ReportingDirrectory, rb.GetCsvReportFileName(utcTime));
             CsvData csvData = rb.CreateCsvData(ad);
 
             CsvWriter w = new CsvWriter();
@@ -81,8 +82,7 @@ namespace Reporter
 
         public void OnStart()
         {
-            _config.UpdateFromAppConfig();
-            _timer.Change(0, (int)_config.ReportingInterval.TotalMilliseconds);
+            _timer.Change(0, (int)Config.ReportingInterval.TotalMilliseconds);
         }
 
         public void OnStop()
@@ -91,13 +91,16 @@ namespace Reporter
             Task.WaitAll(new[] { _executionTask });
         }
 
-        public void OnContinue()
+        public void OnPause()
         {
-            _config.UpdateFromAppConfig();
-            _timer.Change(0, (int)_config.ReportingInterval.TotalMilliseconds);
+            _timer.Change(Timeout.Infinite, Timeout.Infinite);
         }
 
-        public void OnPause() => _timer.Change(Timeout.Infinite, Timeout.Infinite);
+        public void OnContinue()
+        {
+            _timer.Change(0, (int)Config.ReportingInterval.TotalMilliseconds);
+        }
+
 
         #endregion
 
@@ -108,7 +111,7 @@ namespace Reporter
             if (_executionTask.IsCompleted)
                 _executionTask = Task.Run(() => MakeReportAnyway());
             else
-                _logger.Log(LogLevel.Warning, $"Skip report at {DateTime.Now:G}. Reason: previous report is running");
+                Logger.Log(LogLevel.Warning, $"Skip report at {DateTime.Now:G}. Reason: previous report is running");
         }
 
         #endregion
