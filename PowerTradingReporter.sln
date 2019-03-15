@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugMe", "DebugMe\DebugMe.
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{1AB96176-0C12-41AC-A406-7A904D134A1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestsForUtils", "UnitTests\UnitTestsForUtils.csproj", "{131B5FE6-E75D-48C5-A83C-9E9FD2EC364F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestsForUtils", "UnitTestsForUtils\UnitTestsForUtils.csproj", "{131B5FE6-E75D-48C5-A83C-9E9FD2EC364F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestsForReporter", "UnitTestsForReporter\UnitTestsForReporter.csproj", "{9D79A829-7A5E-451A-8E60-0E3E105C7D80}"
 EndProject
