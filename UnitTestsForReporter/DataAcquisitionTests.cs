@@ -31,5 +31,17 @@ namespace UnitTestsForReporter
             DateTime tradingDay = da.GetTradingDay(now, si);
             Assert.AreEqual(tradingDay, new DateTime(2000, 5, 7));
         }
+
+        [TestMethod]
+        public void TestMethod3()
+        {
+            var da = new DataAcquisition();
+            SessionInfo si = new SessionInfo();
+            si.SessionStart = TimeSpan.FromHours(15);
+
+            DateTime now = new DateTime(2000, 5, 6, 15, 0, 0);
+            DateTime tradingDay = da.GetTradingDay(now, si);
+            Assert.AreEqual(tradingDay, new DateTime(2000, 5, 7));
+        }
     }
 }
