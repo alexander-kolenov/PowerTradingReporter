@@ -29,7 +29,8 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            this.ServiceName = "Power Trading Reporter";
+            ServiceName = "Power Trading Reporter";
+            CanPauseAndContinue = true;
         }
 
         #endregion
