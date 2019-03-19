@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,13 +8,13 @@ using Utils.Logger;
 
 namespace Reporter
 {
-    public class TradingReporter
+    public class TradingReporter : IDisposable
     {
         public TradingReporterConfiguration Config { get; set; }
         public ILogger Logger { get; set; }
-
-        private readonly Timer _timer;
+        private Timer _timer;
         private volatile Task _executionTask;
+
 
         public TradingReporter(TradingReporterConfiguration config, ILogger logger)
         {
@@ -82,23 +83,23 @@ namespace Reporter
 
         public void OnStart()
         {
-            _timer.Change(0, (int)Config.ReportingInterval.TotalMilliseconds);
+            _timer?.Change(0, (int)Config.ReportingInterval.TotalMilliseconds);
         }
 
         public void OnStop()
         {
-            _timer.Change(Timeout.Infinite, Timeout.Infinite);
+            _timer?.Change(Timeout.Infinite, Timeout.Infinite);
             Task.WaitAll(new[] { _executionTask });
         }
 
         public void OnPause()
         {
-            _timer.Change(Timeout.Infinite, Timeout.Infinite);
+            _timer?.Change(Timeout.Infinite, Timeout.Infinite);
         }
 
         public void OnContinue()
         {
-            _timer.Change(0, (int)Config.ReportingInterval.TotalMilliseconds);
+            _timer?.Change(0, (int)Config.ReportingInterval.TotalMilliseconds);
         }
 
 
@@ -116,5 +117,15 @@ namespace Reporter
 
         #endregion
 
+
+        public void Dispose()
+        {
+            if (_timer != null)
+            {
+                OnStop();
+                _timer.Dispose();
+                _timer = null;
+            }
+        }
     }
 }
