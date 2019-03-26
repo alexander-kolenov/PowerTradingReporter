@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -123,6 +124,7 @@ namespace Reporter
             if (_timer != null)
             {
                 OnStop();
+                Logger.Log(LogLevel.Debug, $"{GetType().Name} Disposed");
                 _timer.Dispose();
                 _timer = null;
             }

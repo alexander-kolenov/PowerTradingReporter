@@ -1,36 +1,33 @@
 ﻿using Reporter;
 using System;
 using System.ServiceProcess;
+using Unity;
+using Unity.Injection;
+using Unity.Lifetime;
 using Utils.Logger;
 
 namespace WindowsService
 {
     public partial class Service : ServiceBase
     {
-        TradingReporterConfiguration _config;
-        ServiceLogger _logger;
+
         TradingReporter _tradingReporter;
 
         public Service()
         {
             InitializeComponent();
-            _logger = new ServiceLogger(this);
 
-            _config = new TradingReporterConfiguration();
-            _config.UpdateFromAppConfig();
+            IUnityContainer _container = new UnityContainer();
+            _container.RegisterType<ILogger, ServiceLogger>(new InjectionConstructor(new object[] { this }));
+            _container.RegisterType<TradingReporter>(new ContainerControlledLifetimeManager());
+            Disposed += (o, e) => _container.Dispose();
 
-            _tradingReporter = new TradingReporter(_config, _logger);
-            this.Disposed += (s, e) =>_tradingReporter.Dispose();
-        }
-
-        private void Service_Disposed(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
+            _tradingReporter = _container.Resolve<TradingReporter>();
         }
 
         protected override void OnStart(string[] args)
         {
-            _config.UpdateFromAppConfig();
+            _tradingReporter.Config.UpdateFromAppConfig();
             _tradingReporter.OnStart();
         }
 
@@ -46,7 +43,7 @@ namespace WindowsService
 
         protected override void OnContinue()
         {
-            _config.UpdateFromAppConfig();
+            _tradingReporter.Config.UpdateFromAppConfig();
             _tradingReporter.OnContinue();
         }
 
