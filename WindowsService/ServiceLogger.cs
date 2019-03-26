@@ -1,9 +1,11 @@
-﻿using System.Diagnostics;
-using Utils.Logger;
+﻿using NLog;
+using NLog.Targets;
+using System.Diagnostics;
 
 namespace WindowsService
 {
-    class ServiceLogger : ILogger
+    [Target("ServiceLogger")]
+    class ServiceLogger : TargetWithLayout
     {
         private readonly EventLog _logger;
 
@@ -13,29 +15,21 @@ namespace WindowsService
             _logger = service.EventLog;
         }
 
-        public void Log(LogLevel level, string message)
+
+        protected override void Write(LogEventInfo logEvent)
         {
-            switch (level)
-            {
-                case LogLevel.None:
-                    break;
-                case LogLevel.Debug:
+
+            string message = logEvent.Message;
+            if (logEvent.Level >= LogLevel.Error)
+                _logger.WriteEntry(message, EventLogEntryType.Error);
+            else if (logEvent.Level >= LogLevel.Warn)
+                _logger.WriteEntry(message, EventLogEntryType.Warning);
+            else if (logEvent.Level >= LogLevel.Info)
+                _logger.WriteEntry(message, EventLogEntryType.Information);
 #if DEBUG
-                    _logger.WriteEntry(message, EventLogEntryType.Information);
+            else
+                _logger.WriteEntry(message, EventLogEntryType.Information);
 #endif
-                    break;
-                case LogLevel.Info:
-                    _logger.WriteEntry(message, EventLogEntryType.Information);
-                    break;
-                case LogLevel.Warning:
-                    _logger.WriteEntry(message, EventLogEntryType.Warning);
-                    break;
-                case LogLevel.Error:
-                    _logger.WriteEntry(message, EventLogEntryType.Error);
-                    break;
-                default:
-                    break;
-            }
         }
     }
 }

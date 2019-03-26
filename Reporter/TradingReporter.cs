@@ -1,26 +1,24 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
+﻿using NLog;
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Utils.Csv;
-using Utils.Logger;
 
 namespace Reporter
 {
     public class TradingReporter : IDisposable
     {
         public TradingReporterConfiguration Config { get; set; }
-        public ILogger Logger { get; set; }
+
+        private static Logger _logger = LogManager.GetCurrentClassLogger();
         private Timer _timer;
         private volatile Task _executionTask;
 
 
-        public TradingReporter(TradingReporterConfiguration config, ILogger logger)
+        public TradingReporter(TradingReporterConfiguration config)
         {
             Config = config;
-            Logger = logger;
             _executionTask = new Task(() => { }); // Set _executionTask != null
             _executionTask.RunSynchronously(); // Make _executionTask.IsCompleted = true
             _timer = new Timer(new TimerCallback(TimerProc));
@@ -47,11 +45,11 @@ namespace Reporter
             try
             {
                 reportName = MakeReport(utcNow);
-                Logger.Log(LogLevel.Debug, $"Report created: {reportName}");
+                _logger.Log(LogLevel.Debug, $"Report created: {reportName}");
             }
             catch (Exception ex)
             {
-                Logger.Log(LogLevel.Error, $"try to Make Report ({utcNow}): Exception: {ex.Message} {ex.StackTrace}");
+                _logger.Log(LogLevel.Error, $"try to Make Report ({utcNow}): Exception: {ex.Message} {ex.StackTrace}");
             }
             return reportName;
         }
@@ -113,7 +111,7 @@ namespace Reporter
             if (_executionTask.IsCompleted)
                 _executionTask = Task.Run(() => MakeReportAnyway());
             else
-                Logger.Log(LogLevel.Warning, $"Skip report at {DateTime.Now:G}. Reason: previous report is running");
+                _logger.Log(LogLevel.Warn, $"Skip report at {DateTime.Now:G}. Reason: previous report is running");
         }
 
         #endregion
@@ -124,7 +122,7 @@ namespace Reporter
             if (_timer != null)
             {
                 OnStop();
-                Logger.Log(LogLevel.Debug, $"{GetType().Name} Disposed");
+                _logger.Log(LogLevel.Debug, $"{GetType().Name} Disposed");
                 _timer.Dispose();
                 _timer = null;
             }

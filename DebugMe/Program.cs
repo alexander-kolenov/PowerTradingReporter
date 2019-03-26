@@ -1,8 +1,10 @@
-﻿using Reporter;
+﻿using NLog;
+using NLog.Config;
+using NLog.Targets;
+using Reporter;
 using System;
 using Unity;
 using Unity.Lifetime;
-using Utils.Logger;
 
 namespace DebugMe
 {
@@ -13,8 +15,11 @@ namespace DebugMe
         Program()
         {
             _container = new UnityContainer();
-            _container.RegisterType<ILogger, ConsoleLogger>();
             _container.RegisterType<TradingReporter>(new ContainerControlledLifetimeManager());
+            _container.RegisterFactory<ILogger>(o => LogManager.GetCurrentClassLogger());
+
+            ConfigurationItemFactory.Default.CreateInstance = (Type type) => _container.Resolve(type);
+            Target.Register<CustomDebugLogger>("CustomDebugLogger");
         }
 
         static void Main(string[] args)
@@ -33,7 +38,7 @@ namespace DebugMe
 
         private void Test1()
         {
-            var logger = _container.Resolve<ILogger>();
+            ILogger logger = _container.Resolve<ILogger>();
             TradingReporter reporter = _container.Resolve<TradingReporter>();
 
             DateTime dt = DateTime.UtcNow;
@@ -55,11 +60,11 @@ namespace DebugMe
 
         private void Test2()
         {
-
+            ILogger logger = _container.Resolve<ILogger>();
             TradingReporter reporter = _container.Resolve<TradingReporter>();
+
             reporter.Config.UpdateFromAppConfig();
 
-            var logger = _container.Resolve<ILogger>();
             logger.Log(LogLevel.Debug, $"Config.ReportingInterval = {reporter.Config.ReportingInterval}");
             logger.Log(LogLevel.Debug, $"Config.SessionInfo.SessionStart = {reporter.Config.SessionInfo.SessionStart}");
             logger.Log(LogLevel.Debug, $"Config.ReportingDirrectory = {reporter.Config.ReportingDirrectory}");

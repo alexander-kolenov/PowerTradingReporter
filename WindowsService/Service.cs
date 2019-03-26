@@ -1,10 +1,11 @@
-﻿using Reporter;
+﻿using NLog;
+using NLog.Config;
+using NLog.Targets;
+using Reporter;
 using System;
 using System.ServiceProcess;
 using Unity;
-using Unity.Injection;
 using Unity.Lifetime;
-using Utils.Logger;
 
 namespace WindowsService
 {
@@ -18,8 +19,13 @@ namespace WindowsService
             InitializeComponent();
 
             IUnityContainer _container = new UnityContainer();
-            _container.RegisterType<ILogger, ServiceLogger>(new InjectionConstructor(new object[] { this }));
+            _container = new UnityContainer();
+            _container.RegisterInstance(new ServiceLogger(this));
             _container.RegisterType<TradingReporter>(new ContainerControlledLifetimeManager());
+
+            ConfigurationItemFactory.Default.CreateInstance = (Type type) => _container.Resolve(type);
+            Target.Register<ServiceLogger>("ServiceLogger");
+
             Disposed += (o, e) => _container.Dispose();
 
             _tradingReporter = _container.Resolve<TradingReporter>();
