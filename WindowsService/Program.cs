@@ -1,4 +1,9 @@
-﻿using System.ServiceProcess;
+﻿using NLog.Config;
+using NLog.Targets;
+using Reporter;
+using System.ServiceProcess;
+using Unity;
+using Unity.Lifetime;
 
 namespace WindowsService
 {
@@ -6,12 +11,19 @@ namespace WindowsService
     {
         static void Main()
         {
-            ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[]
+            using (IUnityContainer c = new UnityContainer())
             {
-                new Service()
-            };
-            ServiceBase.Run(ServicesToRun);
+                //Add IDisposable
+                c.RegisterType<TradingReporter>(new HierarchicalLifetimeManager());
+                c.RegisterType<Service>(new HierarchicalLifetimeManager());
+
+                //Add Custom logger to NLog
+                ConfigurationItemFactory.Default.CreateInstance = (t) => c.Resolve(t);
+                Target.Register<ServiceLogger>("ServiceLogger");
+
+                //Run service
+                ServiceBase.Run(new[] { c.Resolve<Service>() });
+            }
         }
     }
 }

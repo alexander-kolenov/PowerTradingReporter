@@ -68,8 +68,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomDebugLogger.cs" />
+    <Compile Include="ITest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Test1.cs" />
+    <Compile Include="Test2.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
