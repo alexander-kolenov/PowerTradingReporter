@@ -11,6 +11,9 @@ namespace Reporter
     {
         public TradingReporterConfiguration Config { get; set; }
 
+
+        private ReportProcessor _reportProcessor;
+
         private static Logger _logger = LogManager.GetCurrentClassLogger();
         private Timer _timer;
         private volatile Task _executionTask;
@@ -19,6 +22,8 @@ namespace Reporter
         public TradingReporter(TradingReporterConfiguration config)
         {
             Config = config;
+            _reportProcessor = new ReportProcessor(Config);
+
             _executionTask = new Task(() => { }); // Set _executionTask != null
             _executionTask.RunSynchronously(); // Make _executionTask.IsCompleted = true
             _timer = new Timer(new TimerCallback(TimerProc));
@@ -26,58 +31,15 @@ namespace Reporter
 
         public void MakeReportAnyway()
         {
-            if (MakeReportSafe() != null)
-                return;
-
-            // shedule repeat reading
-            _executionTask = Task.Run(() => MakeReportAnyway());
-        }
-
-        /// <summary>
-        /// Creates report and save it to file
-        /// </summary>
-        /// <param name="utcTime"></param>
-        /// <returns>File name of report</returns>
-        public string MakeReportSafe()
-        {
-            DateTime utcNow = DateTime.UtcNow;
-            string reportName = null;
-            try
+            Task task = _reportProcessor.MakeReportTask();
+            task.ContinueWith(t =>
             {
-                reportName = MakeReport(utcNow);
-                _logger.Log(LogLevel.Debug, $"Report created: {reportName}");
-            }
-            catch (Exception ex)
-            {
-                _logger.Log(LogLevel.Error, $"try to Make Report ({utcNow}): Exception: {ex.Message} {ex.StackTrace}");
-            }
-            return reportName;
+                var ex = t.Exception.InnerException;
+                _logger.Log(LogLevel.Error, $"Make Report Exception: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                _executionTask = Task.Run(() => MakeReportAnyway());
+            }, TaskContinuationOptions.NotOnRanToCompletion | TaskContinuationOptions.ExecuteSynchronously);
+            task.RunSynchronously();
         }
-
-        /// <summary>
-        /// Creates report and save it to file
-        /// </summary>
-        /// <param name="utcTime"></param>
-        /// <returns>File name of report</returns>
-        public string MakeReport(DateTime utcTime)
-        {
-            DataAcquisition da = new DataAcquisition();
-            DateTime tradingDate = da.GetTradingDay(utcTime, Config.SessionInfo);
-            AggregatedData ad = da.GetAggregatedTrades(tradingDate, Config.SessionInfo);
-
-            ReportBuilder rb = new ReportBuilder();
-            Directory.CreateDirectory(Config.ReportingDirrectory);
-            string reportFileName = Path.Combine(Config.ReportingDirrectory, rb.GetCsvReportFileName(utcTime));
-            CsvData csvData = rb.CreateCsvData(ad);
-
-            using (TextWriter tw = new StreamWriter(reportFileName))
-            {
-                CsvWriter.Write(tw, csvData.Headers, csvData.Rows);
-            }
-
-            return reportFileName;
-        }
-
 
 
         #region OnSomething
