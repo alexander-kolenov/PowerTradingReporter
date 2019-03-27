@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Utils.Csv
+namespace Reporter
 {
     public class CsvData
     {

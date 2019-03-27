@@ -1,9 +1,9 @@
-﻿using NLog;
+﻿using Csv;
+using NLog;
 using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Utils.Csv;
 
 namespace Reporter
 {
@@ -70,8 +70,10 @@ namespace Reporter
             string reportFileName = Path.Combine(Config.ReportingDirrectory, rb.GetCsvReportFileName(utcTime));
             CsvData csvData = rb.CreateCsvData(ad);
 
-            CsvWriter w = new CsvWriter();
-            w.Write(reportFileName, csvData);
+            using (TextWriter tw = new StreamWriter(reportFileName))
+            {
+                CsvWriter.Write(tw, csvData.Headers, csvData.Rows);
+            }
 
             return reportFileName;
         }
