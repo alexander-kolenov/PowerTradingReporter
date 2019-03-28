@@ -1,26 +1,20 @@
 ﻿using NLog;
 using Reporter;
 using System;
+using System.Threading.Tasks;
 using Unity;
 
 namespace DebugMe
 {
     public class Test2 : ITest
     {
-        [Dependency]
-        public ILogger Logger { get; set; }
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         [Dependency]
         public TradingReporter Reporter { get; set; }
 
-        public void Run()
+        public Task Run()
         {
-            Reporter.Config.UpdateFromAppConfig();
-
-            Logger.Log(LogLevel.Debug, $"Config.ReportingInterval = {Reporter.Config.ReportingInterval}");
-            Logger.Log(LogLevel.Debug, $"Config.SessionInfo.SessionStart = {Reporter.Config.SessionInfo.SessionStart}");
-            Logger.Log(LogLevel.Debug, $"Config.ReportingDirrectory = {Reporter.Config.ReportingDirrectory}");
-
             while (true)
             {
                 var key = Console.ReadKey().KeyChar;
@@ -43,7 +37,7 @@ namespace DebugMe
                         Reporter.OnContinue();
                         break;
                     case 'q':
-                        return;
+                        return Task.CompletedTask;
                     default:
                         Console.WriteLine();
                         continue;

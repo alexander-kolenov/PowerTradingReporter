@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TradingPlatform;
 
 
@@ -14,12 +15,12 @@ namespace Reporter
                 : utcTime.Date;
         }
 
-        public AggregatedData GetAggregatedTrades(DateTime utcTime, SessionInfo sessionInfo)
+        public async Task<AggregatedData> GetAggregatedTradesAsync(DateTime utcTime, SessionInfo sessionInfo)
         {
             var ts = new TradingService();
 
             DateTime tradingDate = GetTradingDay(utcTime, sessionInfo);
-            var trades = ts.GetTrades(tradingDate);
+            var trades = await ts.GetTradesAsync(tradingDate);
             var ad = AgregateTrades(tradingDate, sessionInfo, trades);
             return ad;
         }

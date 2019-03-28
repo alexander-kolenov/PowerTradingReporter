@@ -1,7 +1,9 @@
-﻿namespace DebugMe
+﻿using System.Threading.Tasks;
+
+namespace DebugMe
 {
     internal interface ITest
     {
-        void Run();
+        Task Run();
     }
 }

@@ -16,7 +16,6 @@ namespace WindowsService
 
         protected override void OnStart(string[] args)
         {
-            TradingReporter.Config.UpdateFromAppConfig();
             TradingReporter.OnStart();
         }
 
@@ -32,7 +31,6 @@ namespace WindowsService
 
         protected override void OnContinue()
         {
-            TradingReporter.Config.UpdateFromAppConfig();
             TradingReporter.OnContinue();
         }
 

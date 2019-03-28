@@ -65,9 +65,6 @@
     <Reference Include="Unity.Container, Version=5.10.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\packages\Unity.Container.5.10.2\lib\net46\Unity.Container.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.NLog, Version=5.10.0.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.NLog.5.10.0\lib\net46\Unity.NLog.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ProjectInstaller.cs">

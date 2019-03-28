@@ -1,6 +1,5 @@
 ﻿using NLog.Config;
 using NLog.Targets;
-using Reporter;
 using System.ServiceProcess;
 using Unity;
 using Unity.Lifetime;
@@ -14,7 +13,6 @@ namespace WindowsService
             using (IUnityContainer c = new UnityContainer())
             {
                 //Add IDisposable
-                c.RegisterType<TradingReporter>(new HierarchicalLifetimeManager());
                 c.RegisterType<Service>(new HierarchicalLifetimeManager());
 
                 //Add Custom logger to NLog

@@ -1,29 +1,28 @@
 ﻿using Csv;
 using NLog;
+using Quartz;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Unity;
 
 namespace Reporter
 {
-    public class ReportProcessor
+    public class MakeReportJob : IJob
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        [Dependency]
         public TradingReporterConfiguration Config { get; set; }
 
-        private static Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public ReportProcessor(TradingReporterConfiguration config)
+        public async Task Execute(IJobExecutionContext context = null)
         {
-            Config = config;
-
-        }
-
-        public Task MakeReportTask() => new Task(() =>
-        {
+            Config = (TradingReporterConfiguration)context?.MergedJobDataMap[nameof(TradingReporterConfiguration)];
             DateTime utcTime = DateTime.UtcNow;
             DataAcquisition da = new DataAcquisition();
             DateTime tradingDate = da.GetTradingDay(utcTime, Config.SessionInfo);
-            AggregatedData ad = da.GetAggregatedTrades(tradingDate, Config.SessionInfo);
+            AggregatedData ad = await da.GetAggregatedTradesAsync(tradingDate, Config.SessionInfo);
 
             ReportBuilder rb = new ReportBuilder();
             Directory.CreateDirectory(Config.ReportingDirrectory);
@@ -31,11 +30,9 @@ namespace Reporter
             CsvData csvData = rb.CreateCsvData(ad);
 
             using (TextWriter tw = new StreamWriter(reportFileName))
-            {
                 CsvWriter.Write(tw, csvData.Headers, csvData.Rows);
-            }
 
-            _logger.Log(LogLevel.Debug, $"Report created: {reportFileName}");
-        });
+            Logger.Log(LogLevel.Debug, $"Report created: {reportFileName}");
+        }
     }
 }

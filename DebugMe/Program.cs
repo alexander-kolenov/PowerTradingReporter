@@ -4,7 +4,6 @@ using NLog.Targets;
 using Reporter;
 using System;
 using Unity;
-using Unity.Lifetime;
 
 namespace DebugMe
 {
@@ -15,15 +14,13 @@ namespace DebugMe
             using (IUnityContainer c = GetContainer())
             {
                 ITest test = c.Resolve<Test2>();
-                test.Run();
+                test.Run().GetAwaiter().GetResult();
             }
         }
 
         private static IUnityContainer GetContainer()
         {
             UnityContainer c = new UnityContainer();
-            c.RegisterType<TradingReporter>(new HierarchicalLifetimeManager());
-            c.RegisterFactory<ILogger>(o => LogManager.GetCurrentClassLogger());
 
             ConfigurationItemFactory.Default.CreateInstance = (Type type) => c.Resolve(type);
             Target.Register<CustomDebugLogger>("CustomDebugLogger");

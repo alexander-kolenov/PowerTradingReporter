@@ -3,13 +3,14 @@ using NLog;
 using Reporter;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Unity;
 
 namespace DebugMe
 {
     public class Test1 : ITest
     {
-        private static Logger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         [Dependency]
         public TradingReporterConfiguration Config { get; set; }
@@ -17,7 +18,7 @@ namespace DebugMe
         [Dependency]
         public TradingReporter Reporter { get; set; }
 
-        public void Run()
+        public async Task Run()
         {
             DateTime dt = DateTime.UtcNow;
 
@@ -30,22 +31,20 @@ namespace DebugMe
                 {
 
                     DateTime tradingDate = da.GetTradingDay(dt, Config.SessionInfo);
-                    AggregatedData ad = da.GetAggregatedTrades(tradingDate, Config.SessionInfo);
+                    AggregatedData ad = await da.GetAggregatedTradesAsync(tradingDate, Config.SessionInfo);
                     ReportBuilder rb = new ReportBuilder();
                     Directory.CreateDirectory(Config.ReportingDirrectory);
                     string reportFileName = Path.Combine(Config.ReportingDirrectory, rb.GetCsvReportFileName(dt));
                     CsvData csvData = rb.CreateCsvData(ad);
 
                     using (TextWriter tw = new StreamWriter(reportFileName))
-                    {
                         CsvWriter.Write(tw, csvData.Headers, csvData.Rows);
-                    }
 
-                    _logger.Log(LogLevel.Debug, $"Report created: {reportFileName}");
+                    Logger.Log(LogLevel.Debug, $"Report created: {reportFileName}");
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log(LogLevel.Debug, $"{dt}:  {ex.Message}  -- {ex.StackTrace}");
+                    Logger.Log(LogLevel.Debug, $"{dt}:  {ex.Message}  -- {ex.InnerException?.Message}");
                 }
             }
         }
