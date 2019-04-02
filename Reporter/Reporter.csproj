@@ -76,6 +76,8 @@
     <Compile Include="ConfigReader.cs" />
     <Compile Include="CsvData.cs" />
     <Compile Include="MakeReportJob.cs" />
+    <Compile Include="QuartzExtensions.cs" />
+    <Compile Include="QuartzRetryJobListner.cs" />
     <Compile Include="SessionInfo.cs" />
     <Compile Include="TradingReporterConfiguration.cs" />
     <Compile Include="DataAcquisition.cs" />

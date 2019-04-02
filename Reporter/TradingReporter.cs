@@ -1,34 +1,38 @@
 ﻿using Quartz;
 using Quartz.Impl;
+using System;
 
 namespace Reporter
 {
     public class TradingReporter
     {
-        private readonly IScheduler _scheduler;
+        private ISchedulerFactory _factory;
+        private IScheduler _scheduler;
 
         public TradingReporter()
         {
-            ISchedulerFactory factory = new StdSchedulerFactory();
-            _scheduler = factory.GetScheduler().GetAwaiter().GetResult();
+            _factory = new StdSchedulerFactory();
         }
 
 
         public void OnStart()
         {
-            _scheduler.Clear();
+            _scheduler = _factory.GetScheduler().GetAwaiter().GetResult();
 
-            IJobDetail job = JobBuilder.Create<MakeReportJob>()
-                    .WithIdentity("MakeReport", "Reporter")
-                    .RequestRecovery()
+            JobKey jobKey = new JobKey("MakeReport", "Reporter");
+            TriggerKey triggerKey = new TriggerKey("PeriodicalTrigger", "Reporter");
+
+            IJobDetail job = JobBuilder.Create(typeof(MakeReportJob))
+                    .WithIdentity(jobKey)
                     .Build();
 
             var config = ConfigReader.ReadTradingReporterConfigurationFromAppConfig();
             job.JobDataMap.Add(nameof(TradingReporterConfiguration), config);
 
             var ReportingInterval = ConfigReader.ReadReportingIntervalFromAppConfig();
+            ReportingInterval = TimeSpan.FromSeconds(10);
             ITrigger trigger = TriggerBuilder.Create()
-                     .WithIdentity("PeriodicalTrigger", "Reporter")
+                     .WithIdentity(triggerKey)
                      .StartNow()
                      .WithSimpleSchedule(x => x
                          .WithInterval(ReportingInterval)
@@ -37,17 +41,21 @@ namespace Reporter
                      .Build();
 
             _scheduler.ScheduleJob(job, trigger);
+            //In case of failue repeat job immediately
+            _scheduler.RepeatJobAfterFall(job);
+
+
             _scheduler.Start();
         }
 
         public void OnStop()
         {
-            _scheduler.Shutdown().Wait();
+            _scheduler.Shutdown(waitForJobsToComplete:true).Wait();
         }
 
         public void OnPause()
         {
-            _scheduler.Standby();
+            _scheduler.PauseAll();
         }
 
         public void OnContinue()
